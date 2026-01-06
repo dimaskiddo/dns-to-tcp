@@ -20,24 +20,24 @@ vendor:
 	GO111MODULE=on go mod vendor
 
 release:
-	## make vendor
+	make vendor
 	make clean-dist
 	goreleaser release --parallelism 1 --snapshot --skip-publish --rm-dist
 	echo "Release '$(SERVICE_NAME)' complete, please check dist directory."
 
 publish:
-	## make vendor
+	make vendor
 	make clean-dist
 	GITHUB_TOKEN=$(GITHUB_TOKEN) goreleaser release --parallelism 1 --rm-dist
 	echo "Publish '$(SERVICE_NAME)' complete, please check your repository releases."
 
 build:
-	## make vendor
-	CGO_ENABLED=$(BUILD_CGO_ENABLED) go build -ldflags="-s -w" -trimpath -a -o $(SERVICE_NAME) main.go
+	make vendor
+	CGO_ENABLED=$(BUILD_CGO_ENABLED) go build -ldflags="-s -w" -trimpath -a -o $(SERVICE_NAME) .
 	echo "Build '$(SERVICE_NAME)' complete."
 
 run:
-	## make vendor
+	make vendor
 	go run *.go
 
 clean-dist:

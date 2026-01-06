@@ -10,10 +10,7 @@ import (
 	"net"
 	"os"
 	"sync"
-	"syscall"
 	"time"
-
-	"golang.org/x/sys/unix"
 )
 
 // --- Constants for DNS Limits ---
@@ -67,13 +64,7 @@ func main() {
 func (b *Bridge) listenUDP(addr string) {
 	// Using ListenConfig to Set SO_REUSEPORT
 	lc := net.ListenConfig{
-		Control: func(network, address string, c syscall.RawConn) error {
-			return c.Control(func(fd uintptr) {
-				unix.SetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_REUSEPORT, 1)
-				unix.SetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_REUSEADDR, 1)
-				unix.SetsockoptInt(int(fd), unix.SOL_SOCKET, unix.SO_RCVBUF, 4*1024*1024)
-			})
-		},
+		Control: setSocketOptions,
 	}
 
 	pc, err := lc.ListenPacket(context.Background(), "udp", addr)
